@@ -8,9 +8,9 @@
     "email": "sonsanghee3@gmail.com"
   },
   "license": "MIT",
-  "engines": {
-    "vscode": "^1.101.0"
-  },
+ "engines": {
+  "vscode": "^1.70.0"
+},
   "categories": [
     "Other",
     "Education",

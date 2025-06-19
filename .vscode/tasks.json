@@ -1,15 +1,29 @@
-// See https://go.microsoft.com/fwlink/?LinkId=733558
-// for the documentation about the tasks.json format
 {
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "watch",
       "type": "npm",
       "script": "watch",
-      "problemMatcher": "$tsc-watch",
       "isBackground": true,
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": [
+          {
+            "regexp": ".*",
+            "file": 1,
+            "line": 1,
+            "message": 0
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\[webpack-cli\\] Compiler starting",
+          "endsPattern": "\\[webpack-cli\\] Compiler is watching files for updates"
+        }
+      },
       "presentation": {
-        "reveal": "never",
+        "reveal": "always",
         "group": "watchers"
       },
       "group": {
@@ -18,10 +32,26 @@
       }
     },
     {
+      "label": "watch-tests",
       "type": "npm",
       "script": "watch-tests",
-      "problemMatcher": "$tsc-watch",
       "isBackground": true,
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": [
+          {
+            "regexp": ".*",
+            "file": 1,
+            "line": 1,
+            "message": 0
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": ".*"
+        }
+      },
       "presentation": {
         "reveal": "never",
         "group": "watchers"
@@ -30,7 +60,7 @@
     },
     {
       "label": "tasks: watch-tests",
-      "dependsOn": ["npm: watch", "npm: watch-tests"],
+      "dependsOn": ["watch", "watch-tests"],
       "problemMatcher": []
     }
   ]

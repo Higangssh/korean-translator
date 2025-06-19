@@ -4,7 +4,6 @@ import { HoverProvider } from "./hoverProvider";
 
 export function activate(context: vscode.ExtensionContext) {
   const translationService = new TranslationService();
-
   // 확장 프로그램 시작시 캐시 초기화
   translationService.clearCache();
 

@@ -65,13 +65,13 @@ graph TD
 ### VS Code 마켓플레이스에서 설치
 
 ```bash
-code --install-extension your-publisher.korean-translator
+code --install-extension .korean-translator
 ```
 
 ### 개발 버전 설치
 
 ```bash
-git clone https://github.com/your-org/korean-translator-vscode.git
+git https://github.com/Higangssh/korean-translator.git
 cd korean-translator-vscode
 npm ci
 npm run compile
@@ -171,7 +171,7 @@ async function authenticateUser(credentials: UserCredentials) {
 
 - Node.js ≥ 16.14.0
 - TypeScript ≥ 5.8.0
-- VS Code ≥ 1.101.0
+- VS Code ≥ 1.70.0
 
 ### 빌드 프로세스
 
