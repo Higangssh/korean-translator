@@ -615,7 +615,7 @@ export class TranslationService {
       .replace(/^\*\s*/, "")
       .trim();
 
-    const englishPattern = /^[a-zA-Z\s.,!?;:'"()-]+$/;
+    const englishPattern = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~` ]+$/;
     return englishPattern.test(cleanComment) ? cleanComment : "";
   }
 }
