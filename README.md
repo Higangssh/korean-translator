@@ -73,8 +73,9 @@ code --install-extension .korean-translator
 ```bash
 git https://github.com/Higangssh/korean-translator.git
 cd korean-translator-vscode
-npm ci
+npm i
 npm run compile
+npm run watch(그냥 F5만 눌러도 됩니다)
 ```
 
 ## 설정 옵션
@@ -158,12 +159,6 @@ async function authenticateUser(credentials: UserCredentials) {
 | Google 번역    | 3차      | 50요청/일    | 높음      | LibreTranslate |
 | LibreTranslate | 4차      | 무제한       | 보통      | 원본 텍스트    |
 
-### 오류 처리
-
-- 자동 대체 서비스 연쇄 호출
-- 우아한 성능 저하
-- 타임아웃 관리 (서비스당 3-5초)
-- 네트워크 오류 복원력
 
 ## 개발 환경
 
@@ -177,13 +172,13 @@ async function authenticateUser(credentials: UserCredentials) {
 
 ```bash
 # 의존성 설치
-npm ci
+npm install
 
-# 개발 빌드
+# 웹팩팩 빌드
 npm run compile
 
-# 감시 모드
-npm run watch
+# 감시 모드(그냥 F5 만 눌러도 됩니다.)
+npm run watch 
 
 # 프로덕션 빌드
 npm run package
