@@ -174,7 +174,7 @@ async function authenticateUser(credentials: UserCredentials) {
 # 의존성 설치
 npm install
 
-# 웹팩팩 빌드
+# 웹팩 빌드
 npm run compile
 
 # 감시 모드(그냥 F5 만 눌러도 됩니다.)
