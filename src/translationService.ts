@@ -34,7 +34,7 @@ export class TranslationService {
    * 1. 로컬 사전 → 2. MyMemory → 3. Google Translate → 4. LibreTranslate 순으로 시도
    */
   async translate(text: string): Promise<string> {
-    
+    text = text.toLowerCase();
     // 캐시 확인
     if (this.cache.has(text)) {
       console.log(`Cache hit: "${text}" → "${this.cache.get(text)}"`);
