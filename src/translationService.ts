@@ -692,20 +692,6 @@ export class TranslationService {
   }
 
   /**
-   * 카멜케이스 문자열을 단어별로 분리 (호환성을 위해 유지)
-   */
-  private splitCamelCase(text: string): string[] {
-    return this.splitWords(text);
-  }
-
-  /**
-   * 카멜케이스를 띄어쓰기로 변환 (호환성을 위해 유지)
-   */
-  private convertCamelCaseToSpaces(text: string): string {
-    return this.convertToSpaces(text);
-  }
-
-  /**
    * 주석에서 영어 텍스트 추출
    */
   extractEnglishFromComment(comment: string): string {
