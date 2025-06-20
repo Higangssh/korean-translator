@@ -1,5 +1,5 @@
-import { TranslationEngine } from './translation/core/TranslationEngine';
-import { TranslationResult } from './translation/strategies/ITranslationStrategy';
+import { TranslationEngine } from './core/TranslationEngine';
+import { TranslationResult } from './strategies/ITranslationStrategy';
 
 /**
  * 번역 서비스 - Facade 패턴
