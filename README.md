@@ -1,4 +1,4 @@
-# Korean Translator for VS Code
+# Korean Code Translator for VS Code
 
 > 영어 주석과 변수명을 실시간으로 한국어 번역해주는 전문적인 IDE 확장 프로그램
 
@@ -10,6 +10,16 @@
 ## 개요
 
 Korean Translator는 영어로 작성된 프로그래밍 요소들을 한국어로 실시간 번역하여 개발자의 생산성을 향상시키는 정교한 VS Code 확장 프로그램입니다. 성능과 정확도를 고려하여 설계된 지능형 다단계 번역 아키텍처와 스마트 캐싱, 상황 인식 필터링 기능을 제공합니다.
+
+## 핵심 기능
+
+### 주요 기능
+
+- **지능형 호버 번역**: 디바운싱이 적용된 마우스 호버 시 상황 인식 번역
+- **키보드 단축키 번역**: 사용자 정의 단축키를 통한 인라인 즉시 번역
+- **다단계 번역 엔진**: 최적의 정확도와 성능을 보장하는 계층적 번역 시스템
+- **스마트 콘텐츠 필터링**: 불필요한 번역 시도를 방지하는 고도화된 패턴 인식
+- **성능 최적화 캐싱**: 자동 정리 기능을 갖춘 메모리 효율적 캐싱 시스템
 
 ## 시스템 아키텍처
 
@@ -28,16 +38,6 @@ graph TD
     J -->|실패| L[LibreTranslate]
     L --> M[캐시 저장 후 반환]
 ```
-
-## 핵심 기능
-
-### 주요 기능
-
-- **지능형 호버 번역**: 디바운싱이 적용된 마우스 호버 시 상황 인식 번역
-- **키보드 단축키 번역**: 사용자 정의 단축키를 통한 인라인 즉시 번역
-- **다단계 번역 엔진**: 최적의 정확도와 성능을 보장하는 계층적 번역 시스템
-- **스마트 콘텐츠 필터링**: 불필요한 번역 시도를 방지하는 고도화된 패턴 인식
-- **성능 최적화 캐싱**: 자동 정리 기능을 갖춘 메모리 효율적 캐싱 시스템
 
 ### 호버 번역 예시
 
@@ -65,17 +65,21 @@ graph TD
 ### VS Code 마켓플레이스에서 설치
 
 ```bash
-code --install-extension .korean-translator
+code --install-extension sonsanghee-dev.korean-code-translator
 ```
+
+- 마켓플레이스: https://marketplace.visualstudio.com/items?itemName=sonsanghee-dev.korean-code-translator
+- GitHub: https://github.com/Higangssh/korean-translator
+- 이슈 리포트: https://github.com/Higangssh/korean-translator/issues
 
 ### 개발 버전 설치
 
 ```bash
-git https://github.com/Higangssh/korean-translator.git
-cd korean-translator-vscode
-npm i
+git clone https://github.com/Higangssh/korean-translator.git
+cd korean-translator
+npm install
 npm run compile
-npm run watch(그냥 F5만 눌러도 됩니다)
+npm run watch  # (그냥 F5만 눌러도 됩니다)
 ```
 
 ## 설정 옵션
@@ -85,14 +89,14 @@ VS Code 설정에서 포괄적인 구성 옵션을 제공합니다:
 ```json5
 {
   // 핵심 기능 토글
-  "korean-translator.enabled": true,
-  "korean-translator.autoTranslateComments": true,
-  "korean-translator.autoTranslateVariables": true,
+  "korean-code-translator.enabled": true,
+  "korean-code-translator.autoTranslateComments": true,
+  "korean-code-translator.autoTranslateVariables": true,
 
   // 성능 튜닝
-  "korean-translator.minimumWordLength": 3,
-  "korean-translator.debounceDelay": 300,
-  "korean-translator.cacheTimeout": 3600000,
+  "korean-code-translator.minimumWordLength": 3,
+  "korean-code-translator.debounceDelay": 300,
+  "korean-code-translator.cacheTimeout": 3600000,
 }
 ```
 
@@ -121,10 +125,10 @@ async function authenticateUser(credentials: UserCredentials) {
 
 `Ctrl+Shift+P` (Windows/Linux) 또는 `Cmd+Shift+P` (macOS)를 통해 접근:
 
-- `Korean Translator: 선택 영역 번역`
-- `Korean Translator: 번역 기능 토글`
-- `Korean Translator: 캐시 초기화`
-- `Korean Translator: 통계 보기`
+- `Korean Code Translator: 선택 영역 번역`
+- `Korean Code Translator: 번역 기능 토글`
+- `Korean Code Translator: 캐시 초기화`
+- `Korean Code Translator: 통계 보기`
 
 ## 번역 필터링
 
@@ -159,7 +163,6 @@ async function authenticateUser(credentials: UserCredentials) {
 | Google 번역    | 3차      | 50요청/일    | 높음      | LibreTranslate |
 | LibreTranslate | 4차      | 무제한       | 보통      | 원본 텍스트    |
 
-
 ## 개발 환경
 
 ### 필수 요구사항
@@ -178,7 +181,7 @@ npm install
 npm run compile
 
 # 감시 모드(그냥 F5 만 눌러도 됩니다.)
-npm run watch 
+npm run watch
 
 # 프로덕션 빌드
 npm run package
@@ -237,10 +240,10 @@ webpack.config.js            # 번들 최적화
 
 ```bash
 # 확장 프로그램 상태 확인
-개발자 도구 → 콘솔 → 필터: "Korean Translator"
+개발자 도구 → 콘솔 → 필터: "KoreanTranslator"
 
 # 구성 확인
-CMD/Ctrl + , → 검색: "korean-translator"
+CMD/Ctrl + , → 검색: "korean-code-translator"
 ```
 
 **API 요청 제한**
@@ -251,7 +254,7 @@ CMD/Ctrl + , → 검색: "korean-translator"
 
 **성능 문제**
 
-- 번역 캐시 초기화: `CMD/Ctrl + Shift + P` → "Korean Translator: 캐시 초기화"
+- 번역 캐시 초기화: `CMD/Ctrl + Shift + P` → "Korean Code Translator: 캐시 초기화"
 - 설정에서 디바운스 지연 조정
 - 네트워크 연결 확인
 

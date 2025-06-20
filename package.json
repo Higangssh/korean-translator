@@ -1,9 +1,17 @@
 {
-  "name": "korean-translator",
-  "displayName": "Korean Translator",
+  "name": "korean-code-translator",
+  "displayName": "Korean Code Translator",
   "description": "Translate comments and variables to Korean on hover and keyboard shortcut",
   "version": "1.0.0",
   "publisher": "sonsanghee-dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Higangssh/korean-translator.git"
+  },
+  "homepage": "https://github.com/Higangssh/korean-translator",
+  "bugs": {
+    "url": "https://github.com/Higangssh/korean-translator/issues"
+  },
   "author": {
     "name": "Sang hee Son",
     "email": "sonsanghee3@gmail.com"
@@ -124,7 +132,10 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "release:patch": "npm version patch && git push origin main --tags",
+    "release:minor": "npm version minor && git push origin main --tags",
+    "release:major": "npm version major && git push origin main --tags"
   },
   "devDependencies": {
     "@types/vscode": "^1.70.0",
