@@ -2,7 +2,7 @@
   "name": "korean-code-translator",
   "displayName": "Korean Code Translator",
   "description": "Translate comments and variables to Korean on hover and keyboard shortcut",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "publisher": "sonsanghee-dev",
   "repository": {
     "type": "git",
