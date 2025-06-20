@@ -3,14 +3,15 @@
   "displayName": "Korean Translator",
   "description": "Translate comments and variables to Korean on hover and keyboard shortcut",
   "version": "1.0.0",
+  "publisher": "sonsanghee-dev",
   "author": {
     "name": "Sang hee Son",
     "email": "sonsanghee3@gmail.com"
   },
   "license": "MIT",
- "engines": {
-  "vscode": "^1.70.0"
-},
+  "engines": {
+    "vscode": "^1.70.0"
+  },
   "categories": [
     "Other",
     "Education",
