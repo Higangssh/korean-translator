@@ -40,12 +40,12 @@ export class TranslationService {
       console.log(`Cache hit: "${text}" → "${this.cache.get(text)}"`);
       return this.cache.get(text)!;
     }
-    
+
     if (!this.shouldTranslate(text)) {
       console.log(`Skipping translation for: "${text}" (not translatable)`);
       return text;
     }
-    
+
     // 요청 제한 (1초에 1회)
     const now = Date.now();
     if (now - this.lastRequestTime < 1000) {
@@ -130,7 +130,6 @@ export class TranslationService {
    * 번역이 필요한 텍스트인지 판단
    */
   private shouldTranslate(text: string): boolean {
-
     // 빈 문자열이나 공백만 있는 경우
     if (!text || text.trim().length === 0) {
       return false;
@@ -174,22 +173,111 @@ export class TranslationService {
     // 번역이 의미없는 프로그래밍 키워드들 (확장)
     const skipWords = [
       // CSS 단위
-      "px", "em", "rem", "vh", "vw", "%", "pt", "pc", "in", "cm", "mm",
+      "px",
+      "em",
+      "rem",
+      "vh",
+      "vw",
+      "%",
+      "pt",
+      "pc",
+      "in",
+      "cm",
+      "mm",
       // 기본 키워드
-      "var", "let", "const", "if", "else", "for", "while", "do", "switch", "case",
-      "true", "false", "null", "undefined", "void", "typeof", "instanceof",
+      "var",
+      "let",
+      "const",
+      "if",
+      "else",
+      "for",
+      "while",
+      "do",
+      "switch",
+      "case",
+      "true",
+      "false",
+      "null",
+      "undefined",
+      "void",
+      "typeof",
+      "instanceof",
       // HTML 태그
-      "div", "span", "img", "src", "alt", "href", "id", "class", "style",
-      "input", "button", "form", "table", "tr", "td", "th", "ul", "li", "ol",
+      "div",
+      "span",
+      "img",
+      "src",
+      "alt",
+      "href",
+      "id",
+      "class",
+      "style",
+      "input",
+      "button",
+      "form",
+      "table",
+      "tr",
+      "td",
+      "th",
+      "ul",
+      "li",
+      "ol",
       // 파일 형식
-      "css", "js", "html", "xml", "json", "svg", "png", "jpg", "jpeg", "gif",
-      "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "zip", "rar",
+      "css",
+      "js",
+      "html",
+      "xml",
+      "json",
+      "svg",
+      "png",
+      "jpg",
+      "jpeg",
+      "gif",
+      "pdf",
+      "doc",
+      "docx",
+      "xls",
+      "xlsx",
+      "ppt",
+      "pptx",
+      "zip",
+      "rar",
       // 네트워크/프로토콜
-      "http", "https", "ftp", "ssh", "tcp", "udp", "ip", "dns", "cdn",
-      "www", "com", "org", "net", "edu", "gov", "io", "dev", "app",
+      "http",
+      "https",
+      "ftp",
+      "ssh",
+      "tcp",
+      "udp",
+      "ip",
+      "dns",
+      "cdn",
+      "www",
+      "com",
+      "org",
+      "net",
+      "edu",
+      "gov",
+      "io",
+      "dev",
+      "app",
       // 시스템/환경
-      "localhost", "admin", "root", "user", "temp", "tmp", "bin", "lib",
-      "src", "dist", "build", "node", "npm", "yarn", "git", "svn",
+      "localhost",
+      "admin",
+      "root",
+      "user",
+      "temp",
+      "tmp",
+      "bin",
+      "lib",
+      "src",
+      "dist",
+      "build",
+      "node",
+      "npm",
+      "yarn",
+      "git",
+      "svn",
     ];
 
     if (skipWords.includes(text.toLowerCase())) {
@@ -204,7 +292,12 @@ export class TranslationService {
     const isKebabCase = /^[a-z]+(-[a-z]+)*$/.test(text); // user-auth-token
 
     // 영어로 시작하거나 명명 케이스 패턴 중 하나라면 번역 대상
-    if (!/^[a-zA-Z]/.test(text) && !isConstantCase && !isSnakeCase && !isKebabCase) {
+    if (
+      !/^[a-zA-Z]/.test(text) &&
+      !isConstantCase &&
+      !isSnakeCase &&
+      !isKebabCase
+    ) {
       return false;
     }
 
@@ -246,7 +339,7 @@ export class TranslationService {
     }
 
     // 경로나 쿼리 파라미터가 포함된 경우
-    if (/[\/\?&#=]/.test(text) && text.includes('.')) {
+    if (/[\/\?&#=]/.test(text) && text.includes(".")) {
       return true;
     }
 
@@ -257,7 +350,15 @@ export class TranslationService {
    * 번역 가능한 약어인지 판별
    */
   private isTranslatableAcronym(text: string): boolean {
-    const translatableAcronyms = ['API', 'URL', 'AWS', 'GCP', 'SQL', 'JWT', 'UUID'];
+    const translatableAcronyms = [
+      "API",
+      "URL",
+      "AWS",
+      "GCP",
+      "SQL",
+      "JWT",
+      "UUID",
+    ];
     return translatableAcronyms.includes(text.toUpperCase());
   }
 
@@ -267,19 +368,19 @@ export class TranslationService {
   private convertToSpaces(text: string): string {
     // CONSTANT_CASE (S3_UPLOAD_BUCKET_URL)
     if (/^[A-Z][A-Z0-9_]*$/.test(text)) {
-      return text.split('_').join(' ').toLowerCase();
+      return text.split("_").join(" ").toLowerCase();
     }
-    
+
     // snake_case (user_auth_token)
     if (/^[a-z]+(_[a-z]+)*$/.test(text)) {
-      return text.split('_').join(' ');
+      return text.split("_").join(" ");
     }
-    
+
     // kebab-case (user-auth-token)
     if (/^[a-z]+(-[a-z]+)*$/.test(text)) {
-      return text.split('-').join(' ');
+      return text.split("-").join(" ");
     }
-    
+
     // camelCase, PascalCase
     return text
       .replace(/([a-z])([A-Z])/g, "$1 $2")
@@ -305,7 +406,7 @@ export class TranslationService {
       boolean: "불린",
       null: "널",
       undefined: "정의되지않음",
-      
+
       // 사용자 관련
       user: "사용자",
       users: "사용자들",
@@ -314,7 +415,7 @@ export class TranslationService {
       member: "회원",
       account: "계정",
       profile: "프로필",
-      
+
       // 데이터 관련
       data: "데이터",
       info: "정보",
@@ -327,7 +428,7 @@ export class TranslationService {
       size: "크기",
       count: "개수",
       total: "총합",
-      
+
       // 동작 관련
       get: "가져오다",
       set: "설정하다",
@@ -342,7 +443,7 @@ export class TranslationService {
       search: "검색하다",
       filter: "필터링하다",
       sort: "정렬하다",
-      
+
       // 제어문
       if: "만약",
       else: "그렇지않으면",
@@ -354,7 +455,7 @@ export class TranslationService {
       return: "반환",
       import: "가져오기",
       export: "내보내기",
-      
+
       // 상태 관련
       new: "새로운",
       old: "오래된",
@@ -367,7 +468,7 @@ export class TranslationService {
       end: "끝",
       begin: "시작하다",
       finish: "끝내다",
-      
+
       // 불린 값
       true: "참",
       false: "거짓",
@@ -377,7 +478,7 @@ export class TranslationService {
       disable: "비활성화",
       show: "보이기",
       hide: "숨기기",
-      
+
       // 클라우드/인프라 용어
       s3: "S3",
       aws: "AWS",
@@ -393,7 +494,7 @@ export class TranslationService {
       client: "클라이언트",
       host: "호스트",
       port: "포트",
-      
+
       // API 관련
       api: "API",
       endpoint: "엔드포인트",
@@ -402,7 +503,7 @@ export class TranslationService {
       post: "POST",
       put: "PUT",
       patch: "PATCH",
-      
+
       // 설정 관련
       config: "설정",
       configuration: "구성",
@@ -412,7 +513,7 @@ export class TranslationService {
       production: "운영",
       test: "테스트",
       staging: "스테이징",
-      
+
       // 보안 관련
       auth: "인증",
       authentication: "인증",
@@ -423,7 +524,7 @@ export class TranslationService {
       hash: "해시",
       encrypt: "암호화",
       decrypt: "복호화",
-      
+
       // 식별자 관련
       id: "아이디",
       uuid: "UUID",
@@ -431,7 +532,7 @@ export class TranslationService {
       timestamp: "타임스탬프",
       date: "날짜",
       time: "시간",
-      
+
       // 상태 코드
       success: "성공",
       fail: "실패",
@@ -440,7 +541,7 @@ export class TranslationService {
       loading: "로딩중",
       complete: "완료",
       cancel: "취소",
-      
+
       // 파일 관련
       file: "파일",
       folder: "폴더",
@@ -449,7 +550,7 @@ export class TranslationService {
       url: "URL",
       uri: "URI",
       link: "링크",
-      
+
       // 로그 관련
       log: "로그",
       debug: "디버그",
@@ -492,19 +593,19 @@ export class TranslationService {
   private splitWords(text: string): string[] {
     // CONSTANT_CASE (S3_UPLOAD_BUCKET_URL)
     if (/^[A-Z][A-Z0-9_]*$/.test(text)) {
-      return text.split('_').filter(word => word.length > 0);
+      return text.split("_").filter((word) => word.length > 0);
     }
-    
+
     // snake_case (user_auth_token)
     if (/^[a-z]+(_[a-z]+)*$/.test(text)) {
-      return text.split('_').filter(word => word.length > 0);
+      return text.split("_").filter((word) => word.length > 0);
     }
-    
+
     // kebab-case (user-auth-token)
     if (/^[a-z]+(-[a-z]+)*$/.test(text)) {
-      return text.split('-').filter(word => word.length > 0);
+      return text.split("-").filter((word) => word.length > 0);
     }
-    
+
     // camelCase, PascalCase
     return text.replace(/([a-z])([A-Z])/g, "$1 $2").split(" ");
   }
@@ -609,13 +710,15 @@ export class TranslationService {
    */
   extractEnglishFromComment(comment: string): string {
     const cleanComment = comment
-      .replace(/^\/\/\s*/, "")
-      .replace(/^\/\*\*?\s*/, "")
-      .replace(/\*\/\s*$/, "")
-      .replace(/^\*\s*/, "")
+      .replace(/^\/\/\s*/, "") // JavaScript 한줄 주석 제거
+      .replace(/^\/\*\*?\s*/, "") // JavaScript 블록 주석 시작 제거
+      .replace(/\*\/\s*$/, "") // JavaScript 블록 주석 끝 제거
+      .replace(/^\*\s*/, "") // JSDoc 스타일 제거
+      .replace(/^#\s*/, "") // 파이썬/쉘 주석 제거
       .trim();
 
-    const englishPattern = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~` ]+$/;
+    const englishPattern =
+      /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~` ]+$/;
     return englishPattern.test(cleanComment) ? cleanComment : "";
   }
 }

@@ -101,6 +101,16 @@ export class HoverProvider implements vscode.HoverProvider {
       };
     }
 
+    // 파이썬 주석 (#) 감지
+    const pythonCommentIndex = lineText.indexOf("#");
+    if (pythonCommentIndex !== -1 && characterPosition >= pythonCommentIndex) {
+      return {
+        text: lineText.substring(pythonCommentIndex),
+        start: pythonCommentIndex,
+        end: lineText.length,
+      };
+    }
+
     // 블록 주석 (/* */) 감지
     const blockCommentStart = lineText.indexOf("/*");
     const blockCommentEnd = lineText.indexOf("*/");
