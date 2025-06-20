@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2025-06-20
+
+### Removed
+- **Google Translation Strategy**: Google 내부 API 사용으로 인한 ToS 위반 가능성 제거
+- **불안정한 번역 서비스**:  문제 발생 가능한 비공식 API들 제거
+
+### Changed
+- **3단계 번역 파이프라인**: 안정적이고 합법적인 서비스들로만 구성
+  - **Stage 1**: Local Dictionary (129개 핵심 프로그래밍 용어)
+  - **Stage 2**: MyMemory API (공식 번역 메모리 서비스)
+  - **Stage 3**: LibreTranslate (오픈소스 번역 엔진)
+
+### Improved
+- **안정성 향상**: 모든 번역 전략이 공식 API 또는 허가된 서비스 사용
+- **법적 안전성**: 서비스 약관 위반 없는 깨끗한 구현
+- **신뢰성 증대**: 예고 없는 서비스 중단 위험 최소화
+
 ## [1.0.6] - 2025-06-20
 
 ### Added

@@ -2,7 +2,7 @@
   "name": "korean-code-translator",
   "displayName": "Korean Code Translator",
   "description": "Translate comments and variables to Korean on hover and keyboard shortcut",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "publisher": "sonsanghee-dev",
   "repository": {
     "type": "git",
@@ -142,7 +142,6 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/sinon": "^17.0.4",
-    "@types/vscode": "^1.101.0",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
     "@typescript-eslint/parser": "^8.31.1",
     "@vscode/test-cli": "^0.0.10",

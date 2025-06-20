@@ -1,10 +1,9 @@
 import { ITranslationStrategy } from '../strategies/ITranslationStrategy';
 import { LocalTranslationStrategy } from '../strategies/LocalTranslationStrategy';
 import { MyMemoryTranslationStrategy } from '../strategies/MyMemoryTranslationStrategy';
-import { GoogleTranslationStrategy } from '../strategies/GoogleTranslationStrategy';
 import { LibreTranslationStrategy } from '../strategies/LibreTranslationStrategy';
 
-export type StrategyType = 'local' | 'mymemory' | 'google' | 'libre';
+export type StrategyType = 'local' | 'mymemory' | 'libre';
 
 export class TranslationStrategyFactory {
   private static instance: TranslationStrategyFactory;
@@ -30,7 +29,6 @@ export class TranslationStrategyFactory {
   private initializeStrategies(): void {
     this.strategies.set('local', new LocalTranslationStrategy());
     this.strategies.set('mymemory', new MyMemoryTranslationStrategy());
-    this.strategies.set('google', new GoogleTranslationStrategy());
     this.strategies.set('libre', new LibreTranslationStrategy());
   }
 
