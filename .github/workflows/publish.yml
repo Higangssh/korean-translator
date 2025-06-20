@@ -25,8 +25,15 @@ jobs:
         id: get_version
         run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
 
-      - name: Update package version
-        run: npm version ${{ steps.get_version.outputs.VERSION }} --no-git-tag-version
+      - name: Update package version if needed
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${{ steps.get_version.outputs.VERSION }}"
+          if [ "$CURRENT_VERSION" != "$TAG_VERSION" ]; then
+            npm version $TAG_VERSION --no-git-tag-version
+          else
+            echo "Package version already matches tag version: $TAG_VERSION"
+          fi
 
       - name: Publish extension
         run: vsce publish -p ${{ secrets.VSCE_PAT }}
