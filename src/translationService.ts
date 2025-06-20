@@ -2,6 +2,7 @@ import axios from "axios";
 
 export class TranslationService {
   private cache: Map<string, string> = new Map();
+  private failureCache: Set<string> = new Set();
   private requestCount = 0;
   private lastRequestTime = 0;
 
@@ -41,6 +42,11 @@ export class TranslationService {
       return this.cache.get(text)!;
     }
 
+    if (this.failureCache.has(text)) {
+      console.log(` Previously failed translation: "${text}"`);
+      return "번역 실패";
+    }
+
     if (!this.shouldTranslate(text)) {
       console.log(`Skipping translation for: "${text}" (not translatable)`);
       return text;
@@ -58,7 +64,7 @@ export class TranslationService {
       console.log(`Trying local dictionary for: "${text}"`);
       const localTranslation = this.translateLocally(text);
 
-      if (localTranslation !== text) {
+      if (localTranslation !== text && typeof localTranslation === "string") {
         const hasUntranslatedWords = localTranslation.match(/[a-zA-Z]{4,}/g);
 
         if (!hasUntranslatedWords) {
@@ -93,7 +99,12 @@ export class TranslationService {
         console.log(
           `MyMemory success: "${textToTranslate}" → "${memoryResult}"`
         );
-        this.cache.set(text, memoryResult);
+        // 한글이 포함된 경우에만 캐시 저장
+        if (/[가-힣]/.test(memoryResult)) {
+          this.cache.set(text, memoryResult);
+        } else {
+          console.log(`Not caching result - no Korean characters found`);
+        }
         return memoryResult;
       }
       console.log(`MyMemory failed, trying next service...`);
@@ -107,22 +118,85 @@ export class TranslationService {
         console.log(
           `Google translation success: "${textToTranslate}" → "${googleResult}"`
         );
-        this.cache.set(text, googleResult);
+        // 한글이 포함된 경우에만 캐시 저장
+        if (/[가-힣]/.test(googleResult)) {
+          this.cache.set(text, googleResult);
+        } else {
+          console.log(`Not caching Google result - no Korean characters found`);
+        }
         return googleResult;
       }
       console.log(`Google translation failed, trying last service...`);
+      // 4단계: Lingva Translate
+      console.log(`Trying Lingva Translate for: "${textToTranslate}"`);
+      const lingvaResult = await this.translateWithLingva(textToTranslate);
+      if (lingvaResult !== textToTranslate) {
+        if (/[가-힣]/.test(lingvaResult)) {
+          this.cache.set(text, lingvaResult);
+          return lingvaResult;
+        } else {
+          console.log(`Not caching Lingva result - no Korean characters found`);
+        }
+      }
 
-      // 4단계: LibreTranslate
+      // 5단계: FreeTranslate
+      console.log(`Trying FreeTranslate for: "${textToTranslate}"`);
+      const freeResult = await this.translateWithFreeTranslate(textToTranslate);
+      if (freeResult !== textToTranslate) {
+        if (/[가-힣]/.test(freeResult)) {
+          this.cache.set(text, freeResult);
+          return freeResult;
+        } else {
+          console.log(
+            `Not caching FreeTranslate result - no Korean characters found`
+          );
+        }
+      }
+      // 6단계: LibreTranslate
       console.log(`Trying LibreTranslate for: "${textToTranslate}"`);
       const libreResult = await this.translateWithLibre(textToTranslate);
       console.log(
         `LibreTranslate result: "${textToTranslate}" → "${libreResult}"`
       );
-      this.cache.set(text, libreResult);
-      return libreResult;
+      // 한글이 포함된 경우에만 캐시 저장
+      if (/[가-힣]/.test(libreResult)) {
+        this.cache.set(text, libreResult);
+        return libreResult;
+      } else {
+        console.log(`Not caching Libre result - no Korean characters found`);
+
+        // 5단계: 복합 단어 직접 번역 시도 (모든 온라인 번역이 실패한 경우)
+        const words = this.splitWords(text);
+        if (words.length > 1) {
+          console.log(`Trying manual compound word translation for: "${text}"`);
+          const translatedParts = words.map((word) => {
+            const localResult = this.translateLocally(word.toLowerCase());
+            return localResult !== word.toLowerCase() ? localResult : word;
+          });
+
+          // 적어도 하나의 단어가 번역되었는지 확인
+          const hasTranslation = translatedParts.some((part, idx) => {
+            return part !== words[idx];
+          });
+
+          if (hasTranslation) {
+            const manualResult = translatedParts.join(" ");
+            console.log(
+              `Manual translation success: "${text}" → "${manualResult}"`
+            );
+            this.cache.set(text, manualResult);
+            return manualResult;
+          }
+        }
+      }
+      this.failureCache.add(text);
+      console.log(`Translation completely failed for "${text}"`);
+      return "번역 실패";
     } catch (error) {
       console.error(`Translation completely failed for "${text}":`, error);
-      return text;
+      this.failureCache.add(text);
+      console.log(`Translation completely failed for "${text}"`);
+      return "번역 실패";
     }
   }
 
@@ -290,13 +364,15 @@ export class TranslationService {
     const isSnakeCase = /^[a-z]+(_[a-z]+)*$/.test(text); // user_auth_token
     const isCamelCase = /^[a-z][a-zA-Z0-9]*$/.test(text); // userAuthToken
     const isKebabCase = /^[a-z]+(-[a-z]+)*$/.test(text); // user-auth-token
+    const isUnderscorePrefix = /^_[a-zA-Z][a-zA-Z0-9]*$/.test(text); // _valuetobuffer
 
     // 영어로 시작하거나 명명 케이스 패턴 중 하나라면 번역 대상
     if (
-      !/^[a-zA-Z]/.test(text) &&
+      !/^[a-zA-Z_]/.test(text) &&
       !isConstantCase &&
       !isSnakeCase &&
-      !isKebabCase
+      !isKebabCase &&
+      !isUnderscorePrefix
     ) {
       return false;
     }
@@ -366,6 +442,12 @@ export class TranslationService {
    * 다양한 케이스를 띄어쓰기로 변환
    */
   private convertToSpaces(text: string): string {
+    // 언더스코어로 시작하는 경우 (_valuetobuffer)
+    if (/^_[a-zA-Z]/.test(text)) {
+      const withoutUnderscore = text.slice(1); // 언더스코어 제거
+      return this.convertToSpaces(withoutUnderscore); // 재귀 호출로 처리
+    }
+
     // CONSTANT_CASE (S3_UPLOAD_BUCKET_URL)
     if (/^[A-Z][A-Z0-9_]*$/.test(text)) {
       return text.split("_").join(" ").toLowerCase();
@@ -397,6 +479,7 @@ export class TranslationService {
       function: "함수",
       method: "메서드",
       class: "클래스",
+      constructor: "생성자",
       variable: "변수",
       constant: "상수",
       array: "배열",
@@ -406,6 +489,10 @@ export class TranslationService {
       boolean: "불린",
       null: "널",
       undefined: "정의되지않음",
+      any: "임의",
+      type: "타입",
+      interface: "인터페이스",
+      resource: "리소스",
 
       // 사용자 관련
       user: "사용자",
@@ -422,12 +509,19 @@ export class TranslationService {
       information: "정보",
       name: "이름",
       value: "값",
+      values: "값들",
       key: "키",
       index: "인덱스",
       length: "길이",
       size: "크기",
       count: "개수",
       total: "총합",
+      frame: "프레임",
+      rate: "속도",
+      base: "기반",
+      handler: "처리기",
+      builder: "빌더",
+      stream: "스트림",
 
       // 동작 관련
       get: "가져오다",
@@ -518,6 +612,8 @@ export class TranslationService {
       auth: "인증",
       authentication: "인증",
       authorization: "권한부여",
+      credentials: "자격증명",
+      credential: "자격증명",
       token: "토큰",
       secret: "비밀키",
       password: "비밀번호",
@@ -550,6 +646,18 @@ export class TranslationService {
       url: "URL",
       uri: "URI",
       link: "링크",
+      buffer: "버퍼",
+      json: "JSON",
+      to: "~로",
+      from: "~에서",
+
+      // 메모리 관련
+      alloc: "할당",
+      allocate: "할당하다",
+      malloc: "메모리할당",
+      free: "해제",
+      unsafe: "비안전",
+      safe: "안전",
 
       // 로그 관련
       log: "로그",
@@ -563,7 +671,8 @@ export class TranslationService {
 
     // 완전 일치 확인
     if (coreDict[lowerText]) {
-      return coreDict[lowerText];
+      const result = coreDict[lowerText];
+      return typeof result === "string" ? result : text;
     }
 
     // 단어 분리
@@ -580,7 +689,9 @@ export class TranslationService {
       });
 
       if (hasTranslation) {
-        return translatedWords.join(" ");
+        const result = translatedWords.join(" ");
+        console.log(` Compound translation: "${text}" → "${result}"`);
+        return result;
       }
     }
 
@@ -607,7 +718,175 @@ export class TranslationService {
     }
 
     // camelCase, PascalCase
-    return text.replace(/([a-z])([A-Z])/g, "$1 $2").split(" ");
+    const words = text.replace(/([a-z])([A-Z])/g, "$1 $2").split(" ");
+
+    // 소문자로만 이루어진 긴 단어는 추가로 분리 시도
+    const result: string[] = [];
+    for (const word of words) {
+      if (word.length > 1 && /^[a-z]+$/.test(word)) {
+        // 알려진 단어 패턴들로 분리 시도
+        const splitResult = this.trySplitCompoundWord(word);
+        result.push(...splitResult);
+      } else {
+        result.push(word);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * 소문자 조합 단어를 분리 시도
+   */
+  private trySplitCompoundWord(word: string): string[] {
+    // 일반적인 프로그래밍 용어 패턴들
+    const commonPatterns = [
+      // user 관련
+      {
+        pattern: /^user(.+)/,
+        split: (match: RegExpMatchArray) => ["user", match[1]],
+      },
+      {
+        pattern: /^(.+)user$/,
+        split: (match: RegExpMatchArray) => [match[1], "user"],
+      },
+
+      // auth 관련
+      {
+        pattern: /^auth(.+)/,
+        split: (match: RegExpMatchArray) => ["auth", match[1]],
+      },
+      {
+        pattern: /^(.+)auth$/,
+        split: (match: RegExpMatchArray) => [match[1], "auth"],
+      },
+
+      // data 관련
+      {
+        pattern: /^data(.+)/,
+        split: (match: RegExpMatchArray) => ["data", match[1]],
+      },
+      {
+        pattern: /^(.+)data$/,
+        split: (match: RegExpMatchArray) => [match[1], "data"],
+      },
+
+      // config 관련
+      {
+        pattern: /^config(.+)/,
+        split: (match: RegExpMatchArray) => ["config", match[1]],
+      },
+      {
+        pattern: /^(.+)config$/,
+        split: (match: RegExpMatchArray) => [match[1], "config"],
+      },
+
+      // file/buffer 관련
+      {
+        pattern: /^file(.+)/,
+        split: (match: RegExpMatchArray) => ["file", match[1]],
+      },
+      {
+        pattern: /^(.+)file$/,
+        split: (match: RegExpMatchArray) => [match[1], "file"],
+      },
+      {
+        pattern: /^buffer(.+)/,
+        split: (match: RegExpMatchArray) => ["buffer", match[1]],
+      },
+      {
+        pattern: /^(.+)buffer$/,
+        split: (match: RegExpMatchArray) => [match[1], "buffer"],
+      },
+
+      // to 동작 관련
+      {
+        pattern: /^to([a-z]+)/,
+        split: (match: RegExpMatchArray) => ["to", match[1]],
+      },
+
+      // get/set 관련
+      {
+        pattern: /^get(.+)/,
+        split: (match: RegExpMatchArray) => ["get", match[1]],
+      },
+      {
+        pattern: /^set(.+)/,
+        split: (match: RegExpMatchArray) => ["set", match[1]],
+      },
+
+      // is/has 관련
+      {
+        pattern: /^is(.+)/,
+        split: (match: RegExpMatchArray) => ["is", match[1]],
+      },
+      {
+        pattern: /^has(.+)/,
+        split: (match: RegExpMatchArray) => ["has", match[1]],
+      },
+
+      // 메모리 관련
+      {
+        pattern: /^alloc(.+)/,
+        split: (match: RegExpMatchArray) => ["alloc", match[1]],
+      },
+      {
+        pattern: /^(.+)alloc$/,
+        split: (match: RegExpMatchArray) => [match[1], "alloc"],
+      },
+
+      // 리소스 관련
+      {
+        pattern: /^resource(.+)/,
+        split: (match: RegExpMatchArray) => ["resource", match[1]],
+      },
+      {
+        pattern: /^(.+)resource$/,
+        split: (match: RegExpMatchArray) => [match[1], "resource"],
+      },
+    ];
+
+    for (const { pattern, split } of commonPatterns) {
+      const match = word.match(pattern);
+      if (match && match[1] && match[1].length > 2) {
+        const parts = split(match);
+
+        // 분리된 부분들에 대해 재귀적으로 더 분리 시도
+        const result: string[] = [];
+        for (const part of parts) {
+          // 3글자 이상인 경우만 추가 분리 시도
+          if (part.length > 3 && /^[a-z]+$/.test(part)) {
+            const subParts = this.trySplitCompoundWord(part);
+            result.push(...subParts);
+          } else {
+            result.push(part);
+          }
+        }
+        return result;
+      }
+    }
+
+    // 알려진 큰 단어들 사전 분리
+    const knownCompounds: Record<string, string[]> = {
+      resourceconstructor: ["resource", "constructor"],
+      arraybuffer: ["array", "buffer"],
+      stringbuilder: ["string", "builder"],
+      filestream: ["file", "stream"],
+      framerate: ["frame", "rate"],
+      keyvalue: ["key", "value"],
+      errorhandler: ["error", "handler"],
+      codebase: ["code", "base"],
+    };
+
+    if (knownCompounds[word]) {
+      console.log(
+        `Using known compound: "${word}" → ${knownCompounds[word].join(", ")}`
+      );
+      return knownCompounds[word];
+    }
+
+    // 패턴이 없으면 원본 반환
+    return [word];
   }
 
   /**
@@ -622,7 +901,19 @@ export class TranslationService {
       );
 
       if (response.data.responseStatus === 200) {
-        return response.data.responseData.translatedText || text;
+        const translatedText =
+          response.data.responseData.translatedText || text;
+
+        // MyMemory 결과도 검증
+        if (this.isValidTranslation(text, translatedText)) {
+          console.log(` MyMemory success: "${text}" → "${translatedText}"`);
+          return translatedText;
+        } else {
+          console.log(
+            ` Invalid MyMemory translation: "${text}" → "${translatedText}"`
+          );
+          return text;
+        }
       }
       return text;
     } catch (error: any) {
@@ -631,9 +922,6 @@ export class TranslationService {
     }
   }
 
-  /**
-   * Google Translate API를 이용한 번역
-   */
   private async translateWithGoogleScraping(text: string): Promise<string> {
     try {
       if (this.requestCount > 50) {
@@ -645,7 +933,7 @@ export class TranslationService {
       const response = await axios.get(
         `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=${encodedText}`,
         {
-          timeout: 3000,
+          timeout: 5000,
           headers: {
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -655,14 +943,91 @@ export class TranslationService {
 
       this.requestCount++;
 
-      if (response.data && response.data[0] && response.data[0][0]) {
-        return response.data[0][0][0] || text;
+      // 디버깅용 로그 (운영환경에서는 제거 가능)
+      console.log(
+        "Google API Response:",
+        JSON.stringify(response.data, null, 2)
+      );
+
+      if (response.data && Array.isArray(response.data) && response.data[0]) {
+        const translations = response.data[0];
+
+        if (Array.isArray(translations) && translations.length > 0) {
+          // 모든 번역 세그먼트를 합침
+          const translatedText = translations
+            .map((segment: any[]) => segment[0])
+            .filter(Boolean)
+            .join("")
+            .trim();
+
+          if (translatedText && this.isValidTranslation(text, translatedText)) {
+            console.log(` Google translation: "${text}" → "${translatedText}"`);
+            this.cache.set(text, translatedText);
+            return translatedText;
+          } else {
+            console.log(
+              ` Invalid Google translation: "${text}" → "${translatedText}"`
+            );
+          }
+        }
       }
+
+      console.log(`Google translation failed: "${text}"`);
       return text;
     } catch (error: any) {
-      console.log(`Google scraping failed:`, error.message);
+      console.log(` Google scraping failed for "${text}":`, error.message);
       return text;
     }
+  }
+
+  /**
+   * 번역 품질 검증 메서드 (새로 추가)
+   */
+  private isValidTranslation(original: string, translated: string): boolean {
+    if (!translated || translated.trim().length === 0) {
+      return false;
+    }
+
+    // 원문과 완전히 동일한 경우
+    if (original === translated) {
+      return false;
+    }
+
+    // 대소문자만 다른 경우 (resourceconstructor → ResourceConstructor)
+    if (original.toLowerCase() === translated.toLowerCase()) {
+      return false;
+    }
+
+    // 단순히 케이스 변환만 된 경우 체크
+    const originalNormalized = original.toLowerCase().replace(/[^a-z]/g, "");
+    const translatedNormalized = translated
+      .toLowerCase()
+      .replace(/[^a-z]/g, "");
+    if (originalNormalized === translatedNormalized) {
+      return false;
+    }
+
+    // 의미없는 번역 패턴 (extends → include_once().)
+    if (
+      translated.includes("()") ||
+      translated.includes("<?") ||
+      translated.includes("?>") ||
+      translated.includes("include_")
+    ) {
+      return false;
+    }
+
+    // 한글이 포함되어야 유효한 번역
+    if (!/[가-힣]/.test(translated)) {
+      return false;
+    }
+
+    // 번역된 텍스트가 너무 짧은 경우 (1-2글자)
+    if (translated.replace(/[^\가-힣]/g, "").length < 2) {
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -687,6 +1052,132 @@ export class TranslationService {
       return response.data.translatedText || text;
     } catch (error: any) {
       console.log(`LibreTranslate failed:`, error.message);
+      return text;
+    }
+  }
+
+  private async translateWithLingva(text: string): Promise<string> {
+    try {
+      // 여러 인스턴스 시도
+      const instances = [
+        "https://lingva.ml/api/v1/en/ko",
+        "https://translate.igna.rocks/api/v1/en/ko",
+        "https://translate.plausibility.cloud/api/v1/en/ko",
+      ];
+
+      for (const instance of instances) {
+        try {
+          const response = await axios.get(
+            `${instance}/${encodeURIComponent(text)}`,
+            {
+              timeout: 8000,
+              headers: {
+                "User-Agent":
+                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+              },
+            }
+          );
+
+          if (response.data && response.data.translation) {
+            const translatedText = response.data.translation;
+            if (this.isValidTranslation(text, translatedText)) {
+              console.log(
+                `Lingva (${instance}) translation: "${text}" → "${translatedText}"`
+              );
+              return translatedText;
+            }
+          }
+        } catch (instanceError) {
+          console.log(`Lingva instance ${instance} failed, trying next...`);
+          continue;
+        }
+      }
+      return text;
+    } catch (error: any) {
+      console.log(`All Lingva instances failed:`, error.message);
+      return text;
+    }
+  }
+
+  // Microsoft Translator
+  private async translateWithMicrosoft(text: string): Promise<string> {
+    try {
+      // 무료 엔드포인트 (월 2백만 글자 제한)
+      const response = await axios.post(
+        "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=en&to=ko",
+        [{ Text: text }],
+        {
+          timeout: 5000,
+          headers: {
+            "Content-Type": "application/json",
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            // API 키 없이도 제한적으로 작동하는 경우가 있음
+          },
+        }
+      );
+
+      if (response.data && response.data[0] && response.data[0].translations) {
+        const translatedText = response.data[0].translations[0].text;
+        if (this.isValidTranslation(text, translatedText)) {
+          console.log(`Microsoft translation: "${text}" → "${translatedText}"`);
+          return translatedText;
+        }
+      }
+      return text;
+    } catch (error: any) {
+      console.log(`Microsoft translation failed:`, error.message);
+      return text;
+    }
+  }
+
+  // 3. FreeTranslate
+  private async translateWithFreeTranslate(text: string): Promise<string> {
+    try {
+      const instances = [
+        "https://translate.argosopentech.com/translate",
+        "https://libretranslate.com/translate", // 공식 데모 사이트
+      ];
+
+      for (const instance of instances) {
+        try {
+          const response = await axios.post(
+            instance,
+            {
+              q: text,
+              source: "en",
+              target: "ko",
+              format: "text",
+            },
+            {
+              timeout: 8000,
+              headers: {
+                "Content-Type": "application/json",
+                "User-Agent":
+                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+              },
+            }
+          );
+
+          if (response.data && response.data.translatedText) {
+            const translatedText = response.data.translatedText;
+            if (this.isValidTranslation(text, translatedText)) {
+              console.log(
+                `FreeTranslate (${instance}) translation: "${text}" → "${translatedText}"`
+              );
+              return translatedText;
+            }
+          }
+        } catch (instanceError) {
+          console.log(
+            `FreeTranslate instance ${instance} failed, trying next...`
+          );
+          continue;
+        }
+      }
+      return text;
+    } catch (error: any) {
+      console.log(`All FreeTranslate instances failed:`, error.message);
       return text;
     }
   }

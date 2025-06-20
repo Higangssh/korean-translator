@@ -84,12 +84,25 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  // 6. 잘못된 번역 수동으로 처리
+  const cleanupBadCommand = vscode.commands.registerCommand(
+    "korean-translator.fixCommonErrors",
+    () => {
+      // 캐시를 초기화하고 다음에 다시 올바르게 번역되도록 함
+      translationService.clearCache();
+      vscode.window.showInformationMessage(
+        "Cache cleared to fix translation errors!"
+      );
+    }
+  );
+
   context.subscriptions.push(
     hoverDisposable,
     translateCommand,
     toggleCommand,
     cacheStatusCommand,
-    clearCacheCommand
+    clearCacheCommand,
+    cleanupBadCommand
   );
 }
 

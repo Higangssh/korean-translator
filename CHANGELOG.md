@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.6] - 2025-06-20
+
+### Added
+
+- Enhanced 6-stage translation pipeline: Extended from 4-stage to comprehensive 6-stage system
+
+- **Stage 1**: Local dictionary (70+ programming terms)
+- **Stage 2**: Compound word splitting with naming convention recognition
+- **Stage 3**: MyMemory API (professional translation memory)
+- **Stage 4**: Google Translate (high accuracy)
+- **Stage 5**: Lingva Translate (multiple instances)
+- **Stage 6**: FreeTranslate & LibreTranslate (open source backup)
+
 ## [1.0.0] - 2025-06-19
 
 ### Added

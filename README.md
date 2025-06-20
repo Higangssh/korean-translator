@@ -31,12 +31,18 @@ graph TD
     C -->|캐시 적중| E[캐시된 결과 반환]
     C -->|캐시 미스| F[로컬 사전]
     F -->|발견됨| G[캐시 저장 후 반환]
-    F -->|발견안됨| H[MyMemory API]
-    H -->|성공| I[캐시 저장 후 반환]
-    H -->|실패| J[Google 번역]
+    F -->|발견안됨| H[단어 분리 시도]
+    H -->|성공| I[복합 단어 번역]
+    H -->|실패| J[MyMemory API]
     J -->|성공| K[캐시 저장 후 반환]
-    J -->|실패| L[LibreTranslate]
-    L --> M[캐시 저장 후 반환]
+    J -->|실패| L[Google 번역]
+    L -->|성공| M[캐시 저장 후 반환]
+    L -->|실패| N[Lingva Translate]
+    N -->|성공| O[캐시 저장 후 반환]
+    N -->|실패| P[FreeTranslate]
+    P -->|성공| Q[캐시 저장 후 반환]
+    P -->|실패| R[LibreTranslate]
+    R --> S[결과 반환]
 ```
 
 ### 호버 번역 예시
