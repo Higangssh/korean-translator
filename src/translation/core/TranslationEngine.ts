@@ -1,8 +1,11 @@
-import { ITranslationStrategy, TranslationResult } from '../strategies/ITranslationStrategy';
-import { TranslationStrategyFactory } from '../factory/TranslationStrategyFactory';
-import { TranslationCache } from './TranslationCache';
-import { TextValidator } from './TextValidator';
-import { TextProcessor } from './TextProcessor';
+import {
+  ITranslationStrategy,
+  TranslationResult,
+} from "../strategies/ITranslationStrategy";
+import { TranslationStrategyFactory } from "../factory/TranslationStrategyFactory";
+import { TranslationCache } from "./TranslationCache";
+import { TextValidator } from "./TextValidator";
+import { TextProcessor } from "./TextProcessor";
 
 export class TranslationEngine {
   private readonly factory: TranslationStrategyFactory;
@@ -30,7 +33,7 @@ export class TranslationEngine {
       return {
         originalText,
         translatedText: cachedResult,
-        strategy: 'Cache',
+        strategy: "Cache",
         success: true,
       };
     }
@@ -41,9 +44,9 @@ export class TranslationEngine {
       return {
         originalText,
         translatedText: text,
-        strategy: 'Validator',
+        strategy: "Validator",
         success: false,
-        error: 'Text is not translatable',
+        error: "Text is not translatable",
       };
     }
 
@@ -56,15 +59,16 @@ export class TranslationEngine {
     }
 
     // 4. 사용 가능한 전략들 가져오기 (우선순위순)
-    const availableStrategies = this.factory.getAvailableStrategies(textToTranslate);
+    const availableStrategies =
+      this.factory.getAvailableStrategies(textToTranslate);
 
     if (availableStrategies.length === 0) {
       return {
         originalText,
         translatedText: text,
-        strategy: 'None',
+        strategy: "None",
         success: false,
-        error: 'No available translation strategies',
+        error: "No available translation strategies",
       };
     }
 
@@ -76,11 +80,13 @@ export class TranslationEngine {
 
         // 번역이 성공했다면 (원본과 다르다면)
         if (result !== textToTranslate) {
-          console.log(`${strategy.name} success: "${textToTranslate}" → "${result}"`);
-          
+          console.log(
+            `${strategy.name} success: "${textToTranslate}" → "${result}"`
+          );
+
           // 캐시에 저장 (원본 텍스트를 키로 사용)
           this.cache.set(text, result);
-          
+
           return {
             originalText,
             translatedText: result,
@@ -88,7 +94,9 @@ export class TranslationEngine {
             success: true,
           };
         } else {
-          console.log(`${strategy.name} returned original text, trying next strategy...`);
+          console.log(
+            `${strategy.name} returned original text, trying next strategy...`
+          );
         }
       } catch (error: any) {
         console.log(`${strategy.name} failed with error:`, error.message);
@@ -101,24 +109,29 @@ export class TranslationEngine {
     return {
       originalText,
       translatedText: text,
-      strategy: 'All Failed',
+      strategy: "All Failed",
       success: false,
-      error: 'All translation strategies failed',
+      error: "All translation strategies failed",
     };
   }
 
   /**
    * 특정 전략만 사용하여 번역
    */
-  public async translateWithStrategy(text: string, strategyType: string): Promise<TranslationResult> {
+  public async translateWithStrategy(
+    text: string,
+    strategyType: string
+  ): Promise<TranslationResult> {
     const strategies = this.factory.getAllStrategies();
-    const strategy = strategies.find(s => s.name.toLowerCase() === strategyType.toLowerCase());
+    const strategy = strategies.find(
+      (s) => s.name.toLowerCase() === strategyType.toLowerCase()
+    );
 
     if (!strategy) {
       return {
         originalText: text,
         translatedText: text,
-        strategy: 'Unknown',
+        strategy: "Unknown",
         success: false,
         error: `Strategy "${strategyType}" not found`,
       };
@@ -157,7 +170,7 @@ export class TranslationEngine {
    * 사용 가능한 전략 목록 반환
    */
   public getAvailableStrategies(text: string): string[] {
-    return this.factory.getAvailableStrategies(text).map(s => s.name);
+    return this.factory.getAvailableStrategies(text).map((s) => s.name);
   }
 
   /**
@@ -183,17 +196,17 @@ export class TranslationEngine {
    */
   public async translateComment(comment: string): Promise<TranslationResult> {
     const englishText = this.validator.extractEnglishFromComment(comment);
-    
+
     if (!englishText) {
       return {
         originalText: comment,
         translatedText: comment,
-        strategy: 'Comment Parser',
+        strategy: "Comment Parser",
         success: false,
-        error: 'No English text found in comment',
+        error: "No English text found in comment",
       };
     }
 
     return this.translate(englishText);
   }
-} 
+}

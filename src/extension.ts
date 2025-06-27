@@ -96,13 +96,42 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  // 7. GPT 설정 완료 및 재시작
+  const setupGPTCommand = vscode.commands.registerCommand(
+    "korean-translator.setupGPT",
+    async () => {
+      const config = vscode.workspace.getConfiguration("korean-translator");
+      const apiKey = config.get<string>("openaiApiKey", "");
+      const model = config.get<string>("gptModel", "gpt-4o-mini");
+
+      if (!apiKey || apiKey.trim() === "") {
+        vscode.window.showWarningMessage(
+          "⚠️ OpenAI API 키가 설정되지 않았습니다. 설정에서 'korean-translator.openaiApiKey'에 API 키를 입력해주세요."
+        );
+        return;
+      }
+
+      // 설정 완료 메시지와 함께 확장 프로그램 재시작
+      vscode.window.showInformationMessage(
+        `✅ GPT 설정이 완료되었습니다! (모델: ${model})\n번역 품질이 향상됩니다. 확장 프로그램을 재시작합니다...`,
+        { modal: false }
+      );
+
+      // 잠시 후 확장 프로그램 재시작
+      setTimeout(() => {
+        vscode.commands.executeCommand("workbench.action.reloadWindow");
+      }, 2000);
+    }
+  );
+
   context.subscriptions.push(
     hoverDisposable,
     translateCommand,
     toggleCommand,
     cacheStatusCommand,
     clearCacheCommand,
-    cleanupBadCommand
+    cleanupBadCommand,
+    setupGPTCommand
   );
 }
 

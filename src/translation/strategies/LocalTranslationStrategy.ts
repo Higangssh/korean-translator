@@ -1,9 +1,9 @@
-import { ITranslationStrategy } from './ITranslationStrategy';
-import { TextProcessor } from '../core/TextProcessor';
+import { ITranslationStrategy } from "./ITranslationStrategy";
+import { TextProcessor } from "../core/TextProcessor";
 
 export class LocalTranslationStrategy implements ITranslationStrategy {
-  public readonly name = 'Local Dictionary';
-  public readonly priority = 1;
+  public readonly name = "Local Dictionary";
+  public readonly priority = 0;
 
   private readonly textProcessor = new TextProcessor();
   private readonly coreDict: { [key: string]: string } = {
@@ -20,7 +20,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     boolean: "불린",
     null: "널",
     undefined: "정의되지않음",
-    
+
     // 사용자 관련
     user: "사용자",
     users: "사용자들",
@@ -29,7 +29,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     member: "회원",
     account: "계정",
     profile: "프로필",
-    
+
     // 데이터 관련
     data: "데이터",
     info: "정보",
@@ -42,7 +42,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     size: "크기",
     count: "개수",
     total: "총합",
-    
+
     // 동작 관련
     get: "가져오다",
     set: "설정하다",
@@ -57,7 +57,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     search: "검색하다",
     filter: "필터링하다",
     sort: "정렬하다",
-    
+
     // 제어문
     if: "만약",
     else: "그렇지않으면",
@@ -69,7 +69,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     return: "반환",
     import: "가져오기",
     export: "내보내기",
-    
+
     // 상태 관련
     new: "새로운",
     old: "오래된",
@@ -82,7 +82,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     end: "끝",
     begin: "시작하다",
     finish: "끝내다",
-    
+
     // 불린 값
     true: "참",
     false: "거짓",
@@ -92,7 +92,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     disable: "비활성화",
     show: "보이기",
     hide: "숨기기",
-    
+
     // 클라우드/인프라 용어
     s3: "S3",
     aws: "AWS",
@@ -108,7 +108,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     client: "클라이언트",
     host: "호스트",
     port: "포트",
-    
+
     // API 관련
     api: "API",
     endpoint: "엔드포인트",
@@ -117,7 +117,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     post: "POST",
     put: "PUT",
     patch: "PATCH",
-    
+
     // 설정 관련
     config: "설정",
     configuration: "구성",
@@ -127,7 +127,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     production: "운영",
     test: "테스트",
     staging: "스테이징",
-    
+
     // 보안 관련
     auth: "인증",
     authentication: "인증",
@@ -138,7 +138,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     hash: "해시",
     encrypt: "암호화",
     decrypt: "복호화",
-    
+
     // 식별자 관련
     id: "아이디",
     uuid: "UUID",
@@ -146,7 +146,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     timestamp: "타임스탬프",
     date: "날짜",
     time: "시간",
-    
+
     // 상태 코드
     success: "성공",
     fail: "실패",
@@ -155,7 +155,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     loading: "로딩중",
     complete: "완료",
     cancel: "취소",
-    
+
     // 파일 관련
     file: "파일",
     folder: "폴더",
@@ -164,7 +164,7 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
     url: "URL",
     uri: "URI",
     link: "링크",
-    
+
     // 로그 관련
     log: "로그",
     debug: "디버그",
@@ -182,7 +182,9 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
 
     // 완전 일치 확인
     if (this.coreDict[lowerText]) {
-      console.log(`Local dictionary match: "${text}" → "${this.coreDict[lowerText]}"`);
+      console.log(
+        `Local dictionary match: "${text}" → "${this.coreDict[lowerText]}"`
+      );
       return this.coreDict[lowerText];
     }
 
@@ -237,4 +239,4 @@ export class LocalTranslationStrategy implements ITranslationStrategy {
   public hasTranslation(english: string): boolean {
     return this.coreDict[english.toLowerCase()] !== undefined;
   }
-} 
+}

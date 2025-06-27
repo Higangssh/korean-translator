@@ -1,8 +1,8 @@
 import axios from "axios";
-import { BaseOnlineTranslationStrategy } from './BaseOnlineTranslationStrategy';
+import { BaseOnlineTranslationStrategy } from "./BaseOnlineTranslationStrategy";
 
 export class MyMemoryTranslationStrategy extends BaseOnlineTranslationStrategy {
-  public readonly name = 'MyMemory';
+  public readonly name = "MyMemory";
   public readonly priority = 2;
 
   public async translate(text: string): Promise<string> {
@@ -17,9 +17,11 @@ export class MyMemoryTranslationStrategy extends BaseOnlineTranslationStrategy {
 
       if (response.data.responseStatus === 200) {
         const translatedText = response.data.responseData.translatedText;
-        
+
         if (this.isValidTranslation(text, translatedText)) {
-          console.log(`MyMemory translation success: "${text}" → "${translatedText}"`);
+          console.log(
+            `MyMemory translation success: "${text}" → "${translatedText}"`
+          );
           return translatedText;
         }
       }
@@ -35,4 +37,4 @@ export class MyMemoryTranslationStrategy extends BaseOnlineTranslationStrategy {
   public canHandle(text: string): boolean {
     return super.canHandle(text) && text.length <= 500; // MyMemory 길이 제한
   }
-} 
+}

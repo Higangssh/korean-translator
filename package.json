@@ -78,6 +78,11 @@
         "command": "korean-translator.cacheStatus",
         "title": "캐시 상태 확인",
         "category": "Korean Translator"
+      },
+      {
+        "command": "korean-translator.setupGPT",
+        "title": "GPT 설정 완료 및 재시작",
+        "category": "Korean Translator"
       }
     ],
     "keybindings": [
@@ -119,6 +124,21 @@
           "minimum": 100,
           "maximum": 1000,
           "description": "호버 디바운스 지연 시간 (밀리초)"
+        },
+        "korean-translator.openaiApiKey": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "OpenAI GPT API 키 (선택사항)\n\n**API 키 입력 후 아래 링크를 클릭하세요:**\n\n[📋 GPT 설정 완료 및 재시작](command:korean-translator.setupGPT)"
+        },
+        "korean-translator.gptModel": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "enum": [
+            "gpt-4o-mini",
+            "gpt-4o",
+            "gpt-3.5-turbo"
+          ],
+          "description": "사용할 GPT 모델"
         }
       }
     }
@@ -164,6 +184,7 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "cheerio": "^1.0.0-rc.12"
+    "cheerio": "^1.0.0-rc.12",
+    "openai": "^4.67.1"
   }
 }

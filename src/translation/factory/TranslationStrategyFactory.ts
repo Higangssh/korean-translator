@@ -1,9 +1,10 @@
-import { ITranslationStrategy } from '../strategies/ITranslationStrategy';
-import { LocalTranslationStrategy } from '../strategies/LocalTranslationStrategy';
-import { MyMemoryTranslationStrategy } from '../strategies/MyMemoryTranslationStrategy';
-import { LibreTranslationStrategy } from '../strategies/LibreTranslationStrategy';
+import { ITranslationStrategy } from "../strategies/ITranslationStrategy";
+import { LocalTranslationStrategy } from "../strategies/LocalTranslationStrategy";
+import { MyMemoryTranslationStrategy } from "../strategies/MyMemoryTranslationStrategy";
+import { LibreTranslationStrategy } from "../strategies/LibreTranslationStrategy";
+import { GPTTranslationStrategy } from "../strategies/GPTTranslationStrategy";
 
-export type StrategyType = 'local' | 'mymemory' | 'libre';
+export type StrategyType = "local" | "mymemory" | "libre" | "gpt";
 
 export class TranslationStrategyFactory {
   private static instance: TranslationStrategyFactory;
@@ -27,9 +28,10 @@ export class TranslationStrategyFactory {
    * 전략들 초기화
    */
   private initializeStrategies(): void {
-    this.strategies.set('local', new LocalTranslationStrategy());
-    this.strategies.set('mymemory', new MyMemoryTranslationStrategy());
-    this.strategies.set('libre', new LibreTranslationStrategy());
+    this.strategies.set("gpt", new GPTTranslationStrategy());
+    this.strategies.set("local", new LocalTranslationStrategy());
+    this.strategies.set("mymemory", new MyMemoryTranslationStrategy());
+    this.strategies.set("libre", new LibreTranslationStrategy());
   }
 
   /**
@@ -43,20 +45,27 @@ export class TranslationStrategyFactory {
    * 모든 전략 반환 (우선순위순으로 정렬)
    */
   public getAllStrategies(): ITranslationStrategy[] {
-    return Array.from(this.strategies.values()).sort((a, b) => a.priority - b.priority);
+    return Array.from(this.strategies.values()).sort(
+      (a, b) => a.priority - b.priority
+    );
   }
 
   /**
    * 사용 가능한 전략들만 반환 (우선순위순으로 정렬)
    */
   public getAvailableStrategies(text: string): ITranslationStrategy[] {
-    return this.getAllStrategies().filter(strategy => strategy.canHandle(text));
+    return this.getAllStrategies().filter((strategy) =>
+      strategy.canHandle(text)
+    );
   }
 
   /**
    * 전략 등록 (새로운 전략 추가용)
    */
-  public registerStrategy(type: StrategyType, strategy: ITranslationStrategy): void {
+  public registerStrategy(
+    type: StrategyType,
+    strategy: ITranslationStrategy
+  ): void {
     this.strategies.set(type, strategy);
   }
 
@@ -87,4 +96,4 @@ export class TranslationStrategyFactory {
   public static resetInstance(): void {
     TranslationStrategyFactory.instance = undefined as any;
   }
-} 
+}

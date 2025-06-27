@@ -1,9 +1,9 @@
 import axios from "axios";
-import { BaseOnlineTranslationStrategy } from './BaseOnlineTranslationStrategy';
+import { BaseOnlineTranslationStrategy } from "./BaseOnlineTranslationStrategy";
 
 export class LibreTranslationStrategy extends BaseOnlineTranslationStrategy {
-  public readonly name = 'LibreTranslate';
-  public readonly priority = 4;
+  public readonly name = "LibreTranslate";
+  public readonly priority = 3;
 
   public async translate(text: string): Promise<string> {
     try {
@@ -41,4 +41,4 @@ export class LibreTranslationStrategy extends BaseOnlineTranslationStrategy {
   public canHandle(text: string): boolean {
     return super.canHandle(text) && text.length <= 1000;
   }
-} 
+}

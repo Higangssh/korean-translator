@@ -4,7 +4,6 @@ import { TranslationService } from "./translationService";
 export class HoverProvider implements vscode.HoverProvider {
   private lastHoverTime = 0;
   private lastHoverText = "";
-  private debounceDelay = 300; // 300ms 디바운싱
 
   constructor(private translationService: TranslationService) {}
 
@@ -68,11 +67,13 @@ export class HoverProvider implements vscode.HoverProvider {
   // 디바운싱 체크 함수
   private shouldTranslate(text: string): boolean {
     const now = Date.now();
+    const config = vscode.workspace.getConfiguration("korean-translator");
+    const debounceDelay = config.get("debounceDelay", 300);
 
-    // 같은 텍스트이고 300ms 이내라면 번역하지 않음
+    // 같은 텍스트이고 설정된 시간 이내라면 번역하지 않음
     if (
       this.lastHoverText === text &&
-      now - this.lastHoverTime < this.debounceDelay
+      now - this.lastHoverTime < debounceDelay
     ) {
       return false;
     }
