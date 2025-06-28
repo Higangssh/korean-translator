@@ -1,15 +1,16 @@
-# Korean Code Translator for VS Code
+# Korean Code Translator for VS Code & Cursor
 
 > 영어 주석과 변수명을 실시간으로 한국어 번역해주는 전문적인 IDE 확장 프로그램
 
 [![VS Code Version](https://img.shields.io/badge/VS%20Code-1.70.0+-blue.svg)](https://code.visualstudio.com/)
+[![Cursor Compatible](https://img.shields.io/badge/Cursor-Compatible-green.svg)](https://cursor.sh/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-3178c6.svg)](https://www.typescriptlang.org/)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 
 ## 개요
 
-Korean Translator는 영어로 작성된 프로그래밍 요소들을 한국어로 실시간 번역하여 개발자의 생산성을 향상시키는 정교한 VS Code 확장 프로그램입니다. **안정성과 법적 안전성**을 최우선으로 하여 설계된 **3단계 번역 아키텍처**와 스마트 캐싱, 상황 인식 필터링 기능을 제공합니다.
+Korean Translator는 영어로 작성된 프로그래밍 요소들을 한국어로 실시간 번역하여 개발자의 생산성을 향상시키는 정교한 **VS Code & Cursor** 확장 프로그램입니다. **안정성과 법적 안전성**을 최우선으로 하여 설계된 **3단계 번역 아키텍처**와 스마트 캐싱, 상황 인식 필터링 기능을 제공합니다.
 
 ## 🚀 빠른 시작 가이드
 
@@ -92,6 +93,21 @@ graph TD
 ```bash
 code --install-extension sonsanghee-dev.korean-code-translator
 ```
+
+### Cursor에서 설치
+
+Cursor는 VS Code 마켓플레이스와 호환되므로 동일하게 설치 가능합니다:
+
+1. **Extensions 탭에서 설치**:
+   - Cursor 내 Extensions 탭 (`Ctrl+Shift+X`)
+   - "Korean Code Translator" 검색 후 설치
+
+2. **명령줄에서 설치**:
+   ```bash
+   cursor --install-extension sonsanghee-dev.korean-code-translator
+   ```
+
+### 링크
 
 - 마켓플레이스: https://marketplace.visualstudio.com/items?itemName=sonsanghee-dev.korean-code-translator
 - GitHub: https://github.com/Higangssh/korean-translator
@@ -283,7 +299,7 @@ async function authenticateUser(credentials: UserCredentials) {
 
 - Node.js ≥ 20.x
 - TypeScript ≥ 5.8.0
-- VS Code ≥ 1.70.0
+- VS Code ≥ 1.70.0 또는 Cursor ≥ 0.1.0
 
 ### 빌드 프로세스
 

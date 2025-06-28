@@ -2,7 +2,7 @@
   "name": "korean-code-translator",
   "displayName": "Korean Code Translator",
   "description": "Translate comments and variables to Korean on hover and keyboard shortcut",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "publisher": "sonsanghee-dev",
   "repository": {
     "type": "git",
@@ -18,7 +18,8 @@
   },
   "license": "MIT",
   "engines": {
-    "vscode": "^1.70.0"
+    "vscode": "^1.70.0",
+    "cursor": "^0.1.0"
   },
   "categories": [
     "Other",
@@ -34,7 +35,9 @@
     "comments",
     "variables",
     "hover",
-    "productivity"
+    "productivity",
+    "cursor",
+    "cursor-editor"
   ],
   "icon": "images/icon.png",
   "galleryBanner": {

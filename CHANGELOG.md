@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-01-29
+
+### Added
+
+- **Cursor IDE Support**: Full compatibility with Cursor AI-powered code editor
+  - Added Cursor engine to package.json engines field
+  - Enhanced README with Cursor installation instructions
+  - Added Cursor-specific keywords for better discoverability
+  - Cursor compatibility badge in documentation
+
+### Changed
+
+- **Documentation Updates**: Updated all references to support both VS Code and Cursor
+  - Modified title to "Korean Code Translator for VS Code & Cursor"
+  - Added Cursor installation methods in README
+  - Updated system requirements to include Cursor ≥ 0.1.0
+  - Enhanced marketplace discoverability with cursor-related keywords
+
+### Improved
+
+- **Cross-platform IDE Support**: Extension now officially supports both VS Code and Cursor
+- **Installation Experience**: Clear installation instructions for both IDEs
+- **Developer Experience**: Seamless functionality across both platforms
+
 ## [1.1.0] - 2025-06-27
 
 ### 새로운 기능
