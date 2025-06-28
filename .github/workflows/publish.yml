@@ -8,18 +8,19 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Install vsce
-        run: npm install -g vsce
+      - name: Install vsce locally
+        run: npm install --save-dev @vscode/vsce
 
       - name: Get version from tag
         id: get_version
@@ -35,5 +36,8 @@ jobs:
             echo "Package version already matches tag version: $TAG_VERSION"
           fi
 
+      - name: Build extension
+        run: npm run package
+
       - name: Publish extension
-        run: vsce publish -p ${{ secrets.VSCE_PAT }}
+        run: npx vsce publish -p ${{ secrets.VSCE_PAT }}

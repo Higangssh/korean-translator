@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.3] - 2025-06-29
+## [1.1.4] - 2025-06-29
 
 ### Added
 
@@ -23,11 +23,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated system requirements to include Cursor ≥ 0.1.0
   - Enhanced marketplace discoverability with cursor-related keywords
 
+### Fixed
+
+- **GitHub Actions Workflow**: Updated deployment pipeline for better reliability
+  - Upgraded to checkout@v4 and setup-node@v4 for latest security patches
+  - Switched from global vsce to local @vscode/vsce to fix css-select dependency issues
+  - Added npm cache to improve CI performance and reduce build times
+  - Added explicit build step before publishing to ensure proper compilation
+
 ### Improved
 
 - **Cross-platform IDE Support**: Extension now officially supports both VS Code and Cursor
 - **Installation Experience**: Clear installation instructions for both IDEs
 - **Developer Experience**: Seamless functionality across both platforms
+- **CI/CD Pipeline**: More robust and reliable automated deployment process
 
 ## [1.1.0] - 2025-06-27
 
