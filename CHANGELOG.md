@@ -7,36 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.4] - 2025-06-29
 
-### Added
+### 새로운 기능
 
-- **Cursor IDE Support**: Full compatibility with Cursor AI-powered code editor
-  - Added Cursor engine to package.json engines field
-  - Enhanced README with Cursor installation instructions
-  - Added Cursor-specific keywords for better discoverability
-  - Cursor compatibility badge in documentation
+- **Cursor IDE 지원**: Cursor AI 코드 에디터 완전 호환
+- **확장된 설치 가이드**: VS Code 및 Cursor 설치 방법 추가
+- **향상된 문서화**: 양쪽 IDE 지원을 위한 통합 문서
 
-### Changed
+### 수정사항
 
-- **Documentation Updates**: Updated all references to support both VS Code and Cursor
-  - Modified title to "Korean Code Translator for VS Code & Cursor"
-  - Added Cursor installation methods in README
-  - Updated system requirements to include Cursor ≥ 0.1.0
-  - Enhanced marketplace discoverability with cursor-related keywords
+- **GitHub Actions 워크플로우 개선**: 배포 파이프라인 안정성 향상
+  - checkout@v4, setup-node@v4로 업그레이드
+  - css-select 의존성 문제 해결을 위해 로컬 @vscode/vsce 사용
+  - npm 캐시 추가로 빌드 성능 개선
 
-### Fixed
+### 개선사항
 
-- **GitHub Actions Workflow**: Updated deployment pipeline for better reliability
-  - Upgraded to checkout@v4 and setup-node@v4 for latest security patches
-  - Switched from global vsce to local @vscode/vsce to fix css-select dependency issues
-  - Added npm cache to improve CI performance and reduce build times
-  - Added explicit build step before publishing to ensure proper compilation
-
-### Improved
-
-- **Cross-platform IDE Support**: Extension now officially supports both VS Code and Cursor
-- **Installation Experience**: Clear installation instructions for both IDEs
-- **Developer Experience**: Seamless functionality across both platforms
-- **CI/CD Pipeline**: More robust and reliable automated deployment process
+- **크로스 플랫폼 지원**: VS Code와 Cursor에서 동일한 사용자 경험
+- **자동화된 배포**: 더욱 안정적인 CI/CD 파이프라인
 
 ## [1.1.0] - 2025-06-27
 
